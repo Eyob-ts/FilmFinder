@@ -1,36 +1,22 @@
 <script setup>
-import { RouterView } from 'vue-router'
-import { useToast } from 'vue-toastification'
-import { onMounted } from 'vue'
-import { useAuthStore } from './store/auth.store'
 
-const toast = useToast()
-const authStore = useAuthStore()
-
-// Initialize auth and handle errors
-onMounted(() => {
-  authStore.setAuthHeader() // Initialize axios headers
-  
-  // Watch for auth store error changes
-  const unsubscribe = authStore.$subscribe((mutation, state) => {
-    if (state.error && state.error.message) {
-      toast.error(state.error.message)
-    }
-  })
-
-  return () => unsubscribe()
-})
 </script>
 
 <template>
-  <div class="bg-gradient-to-br from-red-800 to-black ">
-    <RouterView />
-  </div>
+  <h1 class="text-3xl font-bold underline">hello</h1>
 </template>
 
-<style>
-/* Add this to ensure toasts appear above all content */
-.toast-container {
-  z-index: 9999 !important;
+<style scoped>
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.vue:hover {
+  filter: drop-shadow(0 0 2em #42b883aa);
 }
 </style>
