@@ -9,7 +9,10 @@ const authStore = useAuthStore()
 
 // Initialize auth and handle errors
 onMounted(() => {
-  authStore.setAuthHeader() // Initialize axios headers
+  // Set auth header if token exists
+  if (authStore.token) {
+    authStore.setAuthHeader()
+  }
   
   // Watch for auth store error changes
   const unsubscribe = authStore.$subscribe((mutation, state) => {
@@ -23,7 +26,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="bg-gradient-to-br from-red-800 to-black ">
+  <div class="bg-gradient-to-br from-red-800 to-black min-h-screen">
     <RouterView />
   </div>
 </template>

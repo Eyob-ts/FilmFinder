@@ -2,41 +2,66 @@
   <div class="h-[100vh] w-full flex items-center justify-center p-24 ">
     <form 
       @submit.prevent="handleRegister" 
-      class="w-full max-w-md mb-6  backdrop-blur-xl shadow-xl p-16 md:p-12 flex flex-col gap-6"
+      class="w-full max-w-md mb-6   p-16 md:p-12 flex flex-col gap-6"
     >
       <h1 class="text-3xl font-bold text-center text-white mb-2">Create Account</h1>
-      <p class="text-gray-300 text-center mb-6">Join our community today</p>
 
       <Input
         v-model="form.name"
         label="Full Name"
         type="text"
+      
         placeholder="John Doe"
+        
+        autocomplete="name"
+        inputmode="text"
+        class="w-full"
       />
 
       <Input
-        v-model="form.email"
+      v-model="form.email"
         label="Email Address"
         type="email"
         placeholder="example@mail.com"
+        
+        autocomplete="email"
+        inputMode="email"
+        class="w-full"
       />
 
       <Input
-        v-model="form.password"
+      v-model="form.password"
         label="Password"
         type="password"
         placeholder="••••••••"
+        
+        autocomplete="current-password"
+        class="mt-4"
       />
 
       <Button
-        type="submit"
-        label="Register"
+      type="submit"
+        label="register"
         variant="primary"
         :loading="isLoading"
-        class="btn-primary"
+        :disabled="isLoading"
+        class="mt-6 w-full"
       />
 
       <p v-if="errorMessage" class="text-red-300 text-sm text-center mt-2">{{ errorMessage }}</p>
+
+      <!-- Login Link -->
+      <div class="text-center">
+        <p class="text-sm text-gray-600">
+          Already have an account?
+          <router-link
+            to="/"
+            class="font-medium text-violet-400-600 hover:text-blue-500"
+          >
+            Sign in here
+          </router-link>
+        </p>
+      </div>
     </form>
   </div>
 </template>
@@ -70,7 +95,7 @@ const handleRegister = async () => {
   const { success, error } = await authStore.register(form.value)
   if (success) {
     toast.success('Registration successful!')
-    router.push('/login')
+    router.push('/')
   } else {
     errorMessage.value = error?.message || 'Something went wrong'
     toast.error(errorMessage.value)

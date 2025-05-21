@@ -1,14 +1,18 @@
 <template>
-  <div class="h-[100vh] w-full flex items-center justify-center p-24 ">
+  <div class="h-[100vh] w-full flex items-center justify-center p-8 ">
     <form @submit.prevent="handleLogin" 
-    class="w-full max-w-md mb-6  backdrop-blur-xl shadow-xl p-16 md:p-12 flex flex-col gap-6">
-      <h1 class="text-3xl font-extralight text-gray-500 text-center t mb-2">Login</h1>
-      <p class="text-gray-600 text-center mb-6 font-mono">welcome</p>
+    class="w-full max-w-md  p-16 md:p-12 flex flex-col gap-6">
+      <h1 class="text-3xl font-extralight text-gray-500 text-center t ">Login</h1>
+      <p class="text-gray-600 text-center font-mono">welcome</p>
       <Input
-        v-model="form.email"
-        label="Email Address"
-        type="email"
-        placeholder="example@mail.com"
+      v-model="form.email"
+      label="Email Address"
+      type="email"
+      placeholder="example@mail.com"
+      :error="errors.email"
+      autocomplete="email"
+      inputmode="email"
+      class="w-full"
       />
 
       <Input
@@ -16,18 +20,35 @@
         label="Password"
         type="password"
         placeholder="••••••••"
+        :error="errors.password"
+        autocomplete="current-password"
+        class="mt-4"
       />
 
       <Button
-        type="submit"
+      type="submit"
         label="Login"
         variant="primary"
         :loading="isLoading"
-        class="btn-primary"
+        :disabled="isLoading"
+        class="mt-6 w-full"
       />
 
       <div v-if="authStore.error" class="error-message">
         {{ authStore.error.message }}
+      </div>
+
+      <!-- Register Link -->
+      <div class="text-center">
+        <p class="text-sm text-gray-600">
+          Don't have an account?
+          <router-link
+            to="/register"
+            class="font-medium text-blue-600 hover:text-blue-500"
+          >
+            Register here
+          </router-link>
+        </p>
       </div>
     </form>
   </div>
