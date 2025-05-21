@@ -27,27 +27,8 @@ class RegisterRequest extends FormRequest
              'password'=>[
                 'required',
                 'string',
-                // 'min:8',
-                // 'confirmed',
-                // 'regex:/[a-z]/',
-                // 'regex:/[A-Z]/',
-                // 'regex:/[0-9]/',
-                // 'regex:/[@$!%*?&]/'
-
              ],
         ];
     }
-    public function messages()
-    {
-        return [
-            'name.required' => 'Name is required',
-            'email.required' => 'Email is required',
-            'email.email' => 'Email must be a valid email address',
-            'email.unique' => 'Email already exists',
-            'password.required' => 'Password is required',
-            // 'password.min' => 'Password must be at least 8 characters long',
-            // 'password.confirmed' => 'Password confirmation does not match',
-            // 'password.regex' => 'Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character',
-        ];
-    }
+   
 }
