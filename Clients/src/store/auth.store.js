@@ -1,64 +1,91 @@
-import {defineStore} from 'pinia';
+import { defineStore } from 'pinia';
 import axiosInstance from "../services/auth.api";
 
-export const useAuthStore= defineStore('auth', {
+export const useAuthStore = defineStore('auth', {
     state: () => ({
         user: null,
-        token: localStorage.getItem('token') || null,
+        token: null,
         error: null
     }),
-    actions:{
+    
+    // Initialize store
+    hydrate(state) {
+        state.token = localStorage.getItem('token');
+        if (state.token) {
+            this.setAuthHeader();
+        }
+    },
+    
+    actions: {
+        async authRequest(endpoint, data = {}, isLogout = false) {
+            try {
+                const response = isLogout 
+                    ? await axiosInstance.post(endpoint) 
+                    : await axiosInstance.post(endpoint, data);
+
+                if (!isLogout) {
+                    this.token = response.data.token;
+                    this.user = response.data.user;
+                    localStorage.setItem('token', this.token);
+                    this.setAuthHeader();
+                    return { success: true, user: this.user };
+                } else {
+                    this.clearAuth();
+                    return { success: true };
+                }
+            } catch (error) {
+                const errorMessage = this.getErrorMessage(endpoint, error);
+                this.error = error.response?.data || { message: errorMessage };
+                console.error(`${errorMessage}:`, error);
+                return { success: false, error: this.error };
+            }
+        },
+
+        /**
+         * Get appropriate error message based on the endpoint
+         */
+        getErrorMessage(endpoint, error) {
+            const messages = {
+                '/register': 'Registration failed',
+                '/login': 'Login failed',
+                '/logout': 'Logout failed'
+            };
+            return messages[endpoint] || 'Request failed';
+        },
+
+        /**
+         * Clear authentication state
+         */
+        clearAuth() {
+            this.token = null;
+            this.user = null;
+            localStorage.removeItem('token');
+            delete axiosInstance.defaults.headers.common['Authorization'];
+        },
+
+        // Public auth methods
         async register(credentials) {
-            try {
-                const response = await axiosInstance.post('/register', credentials);
-                this.token = response.data.token;
-                this.user = response.data.user;
-                localStorage.setItem('token', this.token);
-                axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${this.token}`;
-                return { success: true, user: this.user };
-            } catch (error) {
-                this.error = error.response?.data || { message: 'Registration failed' };
-                console.error('Registration failed:', error);
-                return { success: false, error: this.error };
-            }
+            return this.authRequest('/register', credentials);
         },
+
         async login(credentials) {
-            try {
-                const response = await axiosInstance.post('/login', credentials);
-                this.token = response.data.token;
-                this.user = response.data.user;
-                localStorage.setItem('token', this.token);
-                axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${this.token}`;
-                return { success: true, user: this.user };
-            } catch (error) {
-                this.error = error.response?.data || { message: 'Login failed' };
-                return { success: false, error: this.error };
-            }
+            return this.authRequest('/login', credentials);
         },
+
         async logout() {
-            try {
-                await axiosInstance.post('/logout');
-                this.token = null;
-                this.user = null;
-                localStorage.removeItem('token');
-                delete axiosInstance.defaults.headers.common['Authorization'];
-                return {success: true};
-            } catch (error) {
-                this.error = error.response?.data || { message: 'Logout failed' };
-                console.error('Logout failed:', error);
-                return {success: false, error: this.error};
+            return await this.authRequest('/logout', {}, true);
+        },
+
+        // Set Axios auth header globally
+        setAuthHeader() {
+            if (this.token) {
+                axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${this.token}`;
             }
         },
     },
-     // Set Axios auth header globally
-    setAuthHeader() {
-      if (this.token) {
-        axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${this.token}`;
-      }
-    },
+    
     getters: {
         isAuthenticated: (state) => !!state.token,
         getUser: (state) => state.user,
     },
-    
 });

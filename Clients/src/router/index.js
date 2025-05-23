@@ -40,22 +40,39 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, from, next) => {
-  const authStore = useAuthStore();
-  
-  // Check if route requires authentication
-  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    next('/');
-    return;
-  }
-  
-  // Check if route requires guest (not authenticated)
-  if (to.meta.requiresGuest && authStore.isAuthenticated) {
-    next('/search');
-    return;
-  }
-  
-  next();
-});
+const setupRouterGuard = (router) => {
+  router.beforeEach(async (to, from, next) => {
+    const authStore = useAuthStore();
+    
+    // Set auth header if token exists
+    if (authStore.token) {
+      authStore.setAuthHeader();
+    }
+    
+    // Check if route requires authentication
+    if (to.meta.requiresAuth) {
+      if (!authStore.isAuthenticated) {
+        next('/');
+        return;
+      }
+      next();
+      return;
+    }
+    
+    // Check if route requires guest (not authenticated)
+    if (to.meta.requiresGuest) {
+      if (authStore.isAuthenticated) {
+        next('/search');
+        return;
+      }
+      next();
+      return;
+    }
+    
+    next();
+  });
+};
+
+setupRouterGuard(router);
 
 export default router;

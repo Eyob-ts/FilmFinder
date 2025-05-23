@@ -3,56 +3,66 @@ import axios from 'axios';
 const apiClient = axios.create({
   baseURL: 'https://imdb8.p.rapidapi.com',
   headers: {
-    'x-rapidapi-key': '68261eb261msh44ee9981e3b673cp1e6ab3jsn0addcc419975',
-    'x-rapidapi-host': 'imdb8.p.rapidapi.com'
+    'x-rapidapi-key': import.meta.env.VITE_RAPIDAPI_KEY,
+    'x-rapidapi-host': import.meta.env.VITE_RAPIDAPI_HOST
   }
 });
 
+/**
+ * Handles API requests with error handling
+ * @param {Function} requestFn - The API request function to execute
+ * @param {string} errorMessage - Error message prefix for logging
+ */
+const handleRequest = async (requestFn, errorMessage) => {
+  try {
+    const response = await requestFn();
+    return response.data;
+  } catch (error) {
+    console.error(`${errorMessage}:`, error);
+    throw error;
+  }
+};
+
 export const movieApi = {
-  // Search movies
-  async searchMovies(query) {
-    try {
-      const response = await apiClient.get('/title/v2/find', {
-        params: {
-          title: query,
-          limit: 20
-        }
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Error searching movies:', error);
-      throw error;
-    }
+  /**
+   * Search for movies by query
+   * @param {string} query - Search query
+   * @returns {Promise<Object>} Search results
+   */
+  searchMovies(query) {
+    return handleRequest(
+      () => apiClient.get('/title/v2/find', {
+        params: { title: query, limit: 20 }
+      }),
+      'Error searching movies'
+    );
   },
 
-  // Get movie details
-  async getMovieDetails(id) {
-    try {
-      const response = await apiClient.get('/title/get-details', {
-        params: {
-          tconst: id
-        }
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching movie details:', error);
-      throw error;
-    }
+  /**
+   * Get movie details by ID
+   * @param {string} id - Movie ID
+   * @returns {Promise<Object>} Movie details
+   */
+  getMovieDetails(id) {
+    return handleRequest(
+      () => apiClient.get('/title/get-details', {
+        params: { tconst: id }
+      }),
+      'Error fetching movie details'
+    );
   },
 
-  // Get movie images
-  async getMovieImages(id) {
-    try {
-      const response = await apiClient.get('/title/get-images', {
-        params: {
-          tconst: id,
-          limit: 1
-        }
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching movie images:', error);
-      throw error;
-    }
+  /**
+   * Get movie images by ID
+   * @param {string} id - Movie ID
+   * @returns {Promise<Object>} Movie images
+   */
+  getMovieImages(id) {
+    return handleRequest(
+      () => apiClient.get('/title/get-images', {
+        params: { tconst: id, limit: 1 }
+      }),
+      'Error fetching movie images'
+    );
   }
 };

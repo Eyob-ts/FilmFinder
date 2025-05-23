@@ -6,37 +6,50 @@
     >
       <h1 class="text-3xl font-bold text-center text-white mb-2">Create Account</h1>
 
-      <Input
+      <FormField
         v-model="form.name"
         label="Full Name"
         type="text"
-      
         placeholder="John Doe"
-        
+        :error="errors.name"
         autocomplete="name"
         inputmode="text"
+        required
         class="w-full"
       />
 
-      <Input
-      v-model="form.email"
+      <FormField
+        v-model="form.email"
         label="Email Address"
         type="email"
         placeholder="example@mail.com"
-        
+        :error="errors.email"
         autocomplete="email"
-        inputMode="email"
-        class="w-full"
+        inputmode="email"
+        required
+        class="w-full mt-4"
       />
 
-      <Input
-      v-model="form.password"
+      <FormField
+        v-model="form.password"
         label="Password"
         type="password"
-        placeholder="••••••••"
-        
-        autocomplete="current-password"
-        class="mt-4"
+        placeholder="Enter your password"
+        :error="errors.password"
+        autocomplete="new-password"
+        required
+        class="w-full mt-4"
+      />
+      
+      <FormField
+        v-model="form.password_confirmation"
+        label="Confirm Password"
+        type="password"
+        placeholder="Confirm your password"
+        :error="errors.password_confirmation"
+        autocomplete="new-password"
+        required
+        class="w-full mt-4"
       />
 
       <Button
@@ -69,10 +82,10 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import Input from '../../components/ui/Input.vue'
-import Button from '../../components/ui/Button.vue'
-import { useAuthStore } from '../../store/auth.store'
 import { useToast } from 'vue-toastification'
+import { useAuthStore } from '../../store/auth.store'
+import FormField from '../../components/molecules/FormField.vue'
+import Button from '../../components/atoms/Button.vue'
 
 const router = useRouter()
 const toast = useToast()
@@ -81,9 +94,11 @@ const authStore = useAuthStore()
 const form = ref({
   name: '',
   email: '',
-  password: ''
+  password: '',
+  password_confirmation: ''
 })
 
+const errors = ref({})
 const isLoading = ref(false)
 const errorMessage = ref('')
 

@@ -26,7 +26,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="bg-gradient-to-br from-red-800 to-black min-h-screen">
+  <div class="bg-black/90 min-h-screen">
     <RouterView />
   </div>
 </template>
